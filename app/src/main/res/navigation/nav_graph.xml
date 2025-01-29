@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph.xml"
+    app:startDestination="@id/bookListFragment">
+
+    <fragment
+        android:id="@+id/bookListFragment"
+        android:name="com.android.account.book.ui.booklist.BookListFragment"
+        android:label="Your Books" >
+        <action
+            android:id="@+id/action_bookListFragment_to_entryListFragment"
+            app:destination="@id/entryListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/entryListFragment"
+        android:name="com.android.account.book.ui.entrylist.EntryListFragment">
+        <argument
+            android:name="book"
+            android:defaultValue="@null"
+            app:argType="com.android.account.book.data.model.Book"
+            app:nullable="true"/>
+        <action
+            android:id="@+id/action_entryListFragment_to_entryDetailFragment"
+            app:destination="@id/entryDetailFragment" />
+        <action
+            android:id="@+id/action_entryListFragment_to_bookListFragment"
+            app:destination="@id/bookListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/entryDetailFragment"
+        android:name="com.android.account.book.ui.entrydetail.EntryDetailFragment"
+        android:label="Entry Details" >
+        <argument
+            android:name="entry"
+            android:defaultValue="@null"
+            app:argType="com.android.account.book.data.model.Entry"
+            app:nullable="true"/>
+        <argument
+            android:name="entry_type"
+            android:defaultValue="0"
+            app:argType="integer"/>
+        <argument
+            android:name="book_id"
+            android:defaultValue="0"
+            app:argType="integer"/>
+        <action
+            android:id="@+id/action_entryDetailFragment_to_entryListFragment"
+            app:destination="@id/entryListFragment" />
+        <action
+            android:id="@+id/action_entryDetailFragment_to_categoryListFragment"
+            app:destination="@id/categoryListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/categoryListFragment"
+        android:name="com.android.account.book.ui.categoryList.CategoryListFragment"
+        android:label="CategoryListFragment" >
+        <argument
+            android:name="book_id"
+            android:defaultValue="0"
+            app:argType="integer"/>
+        <action
+            android:id="@+id/action_categoryListFragment_to_entryDetailFragment"
+            app:destination="@id/entryDetailFragment" />
+    </fragment>
+</navigation>
