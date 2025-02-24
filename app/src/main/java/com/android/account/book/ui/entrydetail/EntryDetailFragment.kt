@@ -23,6 +23,7 @@ import com.android.account.book.R
 import com.android.account.book.data.model.Book
 import com.android.account.book.data.model.Category
 import com.android.account.book.data.model.Entry
+import com.android.account.book.databinding.FragmentCategoryListBinding
 import com.android.account.book.databinding.FragmentEntryDetailBinding
 import com.android.account.book.ui.MainActivity
 import com.android.account.book.ui.booklist.BookListViewModel
@@ -52,6 +53,8 @@ class EntryDetailFragment:Fragment(R.layout.fragment_entry_detail), MenuProvider
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val binding = FragmentEntryDetailBinding.bind(view)
 
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -147,7 +150,7 @@ class EntryDetailFragment:Fragment(R.layout.fragment_entry_detail), MenuProvider
                 book!!.book_amount = book!!.cash_in - book!!.cash_out
 
                 selectedBookViewModel.updateBook(book)
-                //findNavController().navigateUp()
+                findNavController().navigateUp()
             }
         }
     }

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.account.book.R
 import com.android.account.book.data.model.Category
 import com.android.account.book.databinding.FragmentCategoryListBinding
+import com.android.account.book.databinding.FragmentEntryListBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint

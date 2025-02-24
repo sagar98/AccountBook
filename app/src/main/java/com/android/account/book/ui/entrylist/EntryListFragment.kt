@@ -40,7 +40,6 @@ class EntryListFragment : Fragment(R.layout.fragment_entry_list),
     private val viewModel by viewModels<EntryListViewModel>()
     private val args: EntryListFragmentArgs by navArgs()
     private lateinit var entryAdapter: EntryListAdapter
-    private var entriesList: List<Entry> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,6 +55,8 @@ class EntryListFragment : Fragment(R.layout.fragment_entry_list),
 
         (activity as AppCompatActivity).supportActionBar?.title = args.book?.title
         entryAdapter = EntryListAdapter(this)
+
+        setUI()
 
         viewModel.getEntriesOfBook(args.book!!._id)
 
@@ -90,7 +91,6 @@ class EntryListFragment : Fragment(R.layout.fragment_entry_list),
             lifecycle.coroutineScope.launch {
                 it.collectLatest {
                     entryAdapter.submitList(it)
-                    setUI()
                 }
             }
         }
@@ -102,7 +102,7 @@ class EntryListFragment : Fragment(R.layout.fragment_entry_list),
         findNavController().navigate(action)
     }
 
-    fun setUI() {
+    private fun setUI() {
         binding.tvCashIn.text = selectedBookViewModel.currentBook.value!!.cash_in.toString()
         binding.tvCashOut.text = selectedBookViewModel.currentBook.value!!.cash_out.toString()
         binding.tvBalance.text = selectedBookViewModel.currentBook.value!!.book_amount.toString()
@@ -112,6 +112,11 @@ class EntryListFragment : Fragment(R.layout.fragment_entry_list),
         } else {
             binding.tvBalance.setTextColor(resources.getColor(R.color.holo_red_dark))
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }
