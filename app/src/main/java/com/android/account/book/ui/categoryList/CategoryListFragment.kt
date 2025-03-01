@@ -96,7 +96,6 @@ class CategoryListFragment: Fragment(R.layout.fragment_category_list),
     override fun onItemClick(category: Category) {
         setFragmentResult("selected_category", bundleOf("category" to category))
         findNavController().navigateUp()
-        // test commit
     }
 
     override fun onDestroyView() {

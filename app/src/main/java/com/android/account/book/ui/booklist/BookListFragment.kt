@@ -31,7 +31,6 @@ class BookListFragment : Fragment(R.layout.fragment_book_list),
     lateinit var btAdd: Button
     lateinit var btClose: ImageView
     private val viewModel by activityViewModels<BookListViewModel>()
-    //private val viewModel by viewModels<BookListViewModel>()
     private lateinit var bookAdapter: BookListAdapter
 
     override fun onCreateView(
@@ -62,7 +61,9 @@ class BookListFragment : Fragment(R.layout.fragment_book_list),
         lifecycle.coroutineScope.launch {
             viewModel.getAllBooks().collectIndexed { _, value ->
                 bookAdapter.submitList(value)
-                binding.emptyView.isVisible = value.isEmpty()
+                if(value.isEmpty()) {
+                    binding.emptyView.isVisible = true
+                }
             }
         }
 
