@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.coroutineScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -61,18 +62,27 @@ class BookListFragment : Fragment(R.layout.fragment_book_list),
         lifecycle.coroutineScope.launch {
             viewModel.getAllBooks().collectIndexed { _, value ->
                 bookAdapter.submitList(value)
-                if(value.isEmpty()) {
+                if (value.isEmpty()) {
                     binding.emptyView.isVisible = true
                 }
             }
         }
 
-        viewModel.responseMessage.observe(viewLifecycleOwner) {
-            if (it.toString() != "") {
-                Toast.makeText(this.activity, it.toString(), Toast.LENGTH_LONG).show()
+//        viewModel.responseMessage.observe(viewLifecycleOwner) {
+//            if (it.toString() != "") {
+//                Toast.makeText(this.activity, it.toString(), Toast.LENGTH_LONG).show()
+//                bottomSheetDialog.dismiss()
+//            }
+//        }
+
+        viewModel.responseMessage.observe(viewLifecycleOwner, Observer {
+            it.getContentIfNotHandled().let {
+                if(it!=null) {
+                    Toast.makeText(this.activity, it.toString(), Toast.LENGTH_LONG).show()
+                }
                 bottomSheetDialog.dismiss()
             }
-        }
+        })
 
     }
 

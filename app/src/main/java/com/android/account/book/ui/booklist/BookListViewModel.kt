@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.android.account.book.data.model.Book
+import com.android.account.book.data.model.EventWrapper
 import com.android.account.book.data.repository.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -22,8 +23,11 @@ class BookListViewModel @Inject constructor(
     private val mutableBook = MutableLiveData<Book?>()
     val currentBook: LiveData<Book?> get() = mutableBook
 
-    private val mutableResponseMessage = MutableLiveData("")
-    val responseMessage: LiveData<String> get() = mutableResponseMessage
+//    private val mutableResponseMessage = MutableLiveData("")
+//    val responseMessage: LiveData<String> get() = mutableResponseMessage
+
+    private val mutableResponseMessage = MutableLiveData<EventWrapper<String>>()
+    val responseMessage: LiveData<EventWrapper<String>> get() = mutableResponseMessage
 
     fun setCurrentBook(book: Book?) {
         mutableBook.value = book
@@ -32,7 +36,8 @@ class BookListViewModel @Inject constructor(
     fun addBook(book: Book) {
         viewModelScope.launch {
             repository.addBook(book)
-            mutableResponseMessage.value = "Book added."
+            //mutableResponseMessage.value = "Book added."
+            mutableResponseMessage.value = EventWrapper("Book added.")
         }
     }
 
