@@ -1,13 +1,19 @@
 package com.android.account.book.ui.booklist
 
+import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.PopupMenu
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -22,6 +28,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.launch
+import kotlin.math.truncate
+
 
 @AndroidEntryPoint
 class BookListFragment : Fragment(R.layout.fragment_book_list),
@@ -38,7 +46,7 @@ class BookListFragment : Fragment(R.layout.fragment_book_list),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentBookListBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -46,7 +54,7 @@ class BookListFragment : Fragment(R.layout.fragment_book_list),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bookAdapter = BookListAdapter(this)
+        bookAdapter = BookListAdapter(this, context)
         bottomSheetDialog = BottomSheetDialog(requireContext())
         binding.apply {
             recyclerView.apply {
@@ -68,16 +76,9 @@ class BookListFragment : Fragment(R.layout.fragment_book_list),
             }
         }
 
-//        viewModel.responseMessage.observe(viewLifecycleOwner) {
-//            if (it.toString() != "") {
-//                Toast.makeText(this.activity, it.toString(), Toast.LENGTH_LONG).show()
-//                bottomSheetDialog.dismiss()
-//            }
-//        }
-
         viewModel.responseMessage.observe(viewLifecycleOwner, Observer {
             it.getContentIfNotHandled().let {
-                if(it!=null) {
+                if (it != null) {
                     Toast.makeText(this.activity, it.toString(), Toast.LENGTH_LONG).show()
                 }
                 bottomSheetDialog.dismiss()
@@ -91,7 +92,7 @@ class BookListFragment : Fragment(R.layout.fragment_book_list),
         btAdd = bottomSheetDialog.findViewById(R.id.bt_add)!!
         btAdd.setOnClickListener {
             val title = bottomSheetDialog.findViewById<EditText>(R.id.et_title)?.text.toString()
-            if (!title.isEmpty()) {
+            if (title.isNotEmpty()) {
                 viewModel.addBook(Book(title = title))
             } else {
                 Toast.makeText(activity, "Please enter title for book.", Toast.LENGTH_LONG).show()
@@ -115,8 +116,71 @@ class BookListFragment : Fragment(R.layout.fragment_book_list),
         findNavController().navigate(action)
     }
 
-    override fun onOptionClick(book: Book) {
-        TODO("Not yet implemented")
+    override fun onOptionClick(view: View, book: Book) {
+        val popup = PopupMenu(activity, view)
+        // Inflating popup menu from popup_menu.xml file
+        popup.inflate(R.menu.menu_list)
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_delete -> {
+                    deleteBook(book)
+                }
+
+                R.id.action_rename -> {
+                    renameBook(book)
+                }
+            }
+            true
+        }
+        try {
+            val iconPopup = PopupMenu::class.java.getDeclaredField("mPopup")
+            iconPopup.isAccessible = true
+            val mPopup = iconPopup.get(popup)
+            mPopup.javaClass
+                .getDeclaredMethod("setForceShowIcon", Boolean::class.java)
+                .invoke(mPopup, true)
+        } catch (e: Exception) {
+            Log.e("Error", "Error in showing menu icons")
+        } finally {
+            popup.show()
+        }
     }
 
+    private fun renameBook(book: Book) {
+        bottomSheetDialog.setContentView(R.layout.add_book_bottomsheet_layout)
+        var tvLabel = bottomSheetDialog.findViewById<TextView>(R.id.tv_label)!!
+        tvLabel.text = "Update Book Title"
+        var btAdd = bottomSheetDialog.findViewById<Button>(R.id.bt_add)!!
+        btAdd.text = "Update Title"
+        btAdd.setOnClickListener {
+            var title = bottomSheetDialog.findViewById<EditText>(R.id.et_title)?.text.toString()
+            if (title.isNotEmpty()) {
+                viewModel.updateBookTitle(book._id, title)
+            } else {
+                Toast.makeText(activity, "Please enter title for book.", Toast.LENGTH_LONG).show()
+            }
+        }
+        var btClose = bottomSheetDialog.findViewById<ImageView>(R.id.bt_close)!!
+        btClose.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+        bottomSheetDialog.show()
+    }
+
+    private fun deleteBook(book: Book) {
+        val builder = AlertDialog.Builder(activity)
+        builder.setMessage("Do you want to delete this book ?")
+        builder.setTitle("Delete Book")
+
+        builder.setPositiveButton("Yes") { dialog, which ->
+            viewModel.deleteBook(book)
+        }
+        builder.setNegativeButton("No") { dialog, which ->
+            dialog.cancel()
+        }
+
+        val alertDialog = builder.create()
+        alertDialog.show()
+    }
 }

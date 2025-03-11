@@ -23,9 +23,6 @@ class BookListViewModel @Inject constructor(
     private val mutableBook = MutableLiveData<Book?>()
     val currentBook: LiveData<Book?> get() = mutableBook
 
-//    private val mutableResponseMessage = MutableLiveData("")
-//    val responseMessage: LiveData<String> get() = mutableResponseMessage
-
     private val mutableResponseMessage = MutableLiveData<EventWrapper<String>>()
     val responseMessage: LiveData<EventWrapper<String>> get() = mutableResponseMessage
 
@@ -36,7 +33,6 @@ class BookListViewModel @Inject constructor(
     fun addBook(book: Book) {
         viewModelScope.launch {
             repository.addBook(book)
-            //mutableResponseMessage.value = "Book added."
             mutableResponseMessage.value = EventWrapper("Book added.")
         }
     }
@@ -47,6 +43,19 @@ class BookListViewModel @Inject constructor(
         mutableBook.value = book
         viewModelScope.launch {
             repository.updateBook(book)
+        }
+    }
+
+    fun updateBookTitle(bookId: Int, title: String) {
+        viewModelScope.launch {
+            repository.updateBookTitle(bookId, title)
+            mutableResponseMessage.value = EventWrapper("Book title updated.")
+        }
+    }
+
+    fun deleteBook(book: Book) {
+        viewModelScope.launch {
+            repository.deleteBook(book)
         }
     }
 

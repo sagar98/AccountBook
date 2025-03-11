@@ -1,19 +1,28 @@
 package com.android.account.book.ui.booklist
 
+import android.app.Activity
+import android.content.Context
 import android.graphics.Color
+import android.view.ContextMenu
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView.OnItemClickListener
+import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.android.account.book.R
 import com.android.account.book.data.model.Book
 import com.android.account.book.databinding.BookListItemBinding
+import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.coroutines.NonDisposableHandle.parent
 
 class BookListAdapter(
-    private val listener: OnItemClickListener
+    private val listener: OnItemClickListener,
+    private val activityContext: Context?
 ) : ListAdapter<Book, BookListAdapter.BookViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookViewHolder {
@@ -37,6 +46,10 @@ class BookListAdapter(
                         listener.onItemClick(book)
                     }
                 }
+                imgOptions.setOnClickListener {
+                    val book = getItem(adapterPosition)
+                    listener.onOptionClick(imgOptions, book)
+                }
             }
         }
 
@@ -53,7 +66,7 @@ class BookListAdapter(
 
     interface OnItemClickListener {
         fun onItemClick(book: Book)
-        fun onOptionClick(book: Book)
+        fun onOptionClick(view: View, book: Book)
     }
 
     class DiffCallback : DiffUtil.ItemCallback<Book>() {

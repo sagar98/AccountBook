@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface EntryDao {
 
-    @Query("SELECT * FROM "+Constants.ENTRY_TABLE_NAME+ " WHERE book_id=:bookId")
+    @Query("SELECT * FROM "+Constants.ENTRY_TABLE_NAME+ " WHERE book_id=:bookId ORDER BY updated_at DESC")
     fun getAllEntriesOfBook(bookId: Int): Flow<List<Entry>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
