@@ -8,9 +8,9 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.account.book.R
 import com.android.account.book.data.model.Category
 import com.android.account.book.databinding.FragmentCategoryListBinding
-import com.android.account.book.databinding.FragmentEntryListBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,6 +51,7 @@ class CategoryListFragment: Fragment(R.layout.fragment_category_list),
 
         categoryAdapter = CategoryListAdapter(this)
         bottomSheetDialog = BottomSheetDialog(requireContext()!!)
+        (activity as AppCompatActivity).supportActionBar?.title = "Category List"
         binding.apply {
             recyclerView.apply {
                 adapter = categoryAdapter

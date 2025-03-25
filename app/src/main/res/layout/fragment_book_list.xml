@@ -22,16 +22,16 @@
         android:id="@+id/empty_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="250dp"
+        android:layout_gravity="center"
         android:orientation="vertical"
         android:visibility="gone">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_empty_24"
             android:drawablePadding="8dp"
-            android:text="No books available."
-            android:drawableTop="@drawable/ic_empty_24"/>
+            android:text="No books available." />
 
     </LinearLayout>
 

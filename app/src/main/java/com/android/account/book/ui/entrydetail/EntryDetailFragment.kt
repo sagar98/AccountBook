@@ -1,37 +1,27 @@
 package com.android.account.book.ui.entrydetail
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.android.account.book.R
 import com.android.account.book.data.model.Book
 import com.android.account.book.data.model.Category
 import com.android.account.book.data.model.Entry
-import com.android.account.book.databinding.FragmentCategoryListBinding
 import com.android.account.book.databinding.FragmentEntryDetailBinding
-import com.android.account.book.ui.MainActivity
 import com.android.account.book.ui.booklist.BookListViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.properties.Delegates
 
 @AndroidEntryPoint
-class EntryDetailFragment:Fragment(R.layout.fragment_entry_detail), MenuProvider {
+class EntryDetailFragment:Fragment(R.layout.fragment_entry_detail) {
 
     private var _binding: FragmentEntryDetailBinding? = null
     private val binding get() = _binding!!
@@ -40,7 +30,6 @@ class EntryDetailFragment:Fragment(R.layout.fragment_entry_detail), MenuProvider
     private val selectedBookViewModel by activityViewModels<BookListViewModel>()
     private val viewModel by viewModels<EntryDetailViewModel>()
     private var entryAmount : Int? = null
-    private var menuDelete : MenuItem? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,9 +44,6 @@ class EntryDetailFragment:Fragment(R.layout.fragment_entry_detail), MenuProvider
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentEntryDetailBinding.bind(view)
-
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         val type = args.entryType
         if(type == 1) {
@@ -75,8 +61,10 @@ class EntryDetailFragment:Fragment(R.layout.fragment_entry_detail), MenuProvider
                 binding.etAmount.setText(args.entry!!.entry_amount.toString())
                 binding.etCategory.setText(args.entry!!.category)
                 binding.etRemark.setText(args.entry!!.description)
-                selectedCategory = Category(_id = args.entry!!.category_id, name = args.entry!!.category,
-                    book_id = args.entry!!.book_id)
+                if(args.entry!!.category_id!= null) {
+                    selectedCategory = Category(_id = args.entry!!.category_id!!,
+                        name = args.entry!!.category!!, book_id = args.entry!!.book_id)
+                }
                 binding.btSave.text = "UPDATE"
 
             }
@@ -90,29 +78,43 @@ class EntryDetailFragment:Fragment(R.layout.fragment_entry_detail), MenuProvider
 
         setFragmentResultListener("selected_category") { _, bundle ->
             selectedCategory = bundle.getParcelable("category")
-            Toast.makeText(this.activity, selectedCategory!!.name, Toast.LENGTH_LONG).show()
+            //Toast.makeText(this.activity, selectedCategory!!.name, Toast.LENGTH_LONG).show()
             binding.etCategory.setText(selectedCategory!!.name)
         }
 
         binding.btSave.setOnClickListener {
-            if(type == 1 || type == -1) {
-                val entry = Entry(entry_amount = binding.etAmount.text.toString().toInt(), entry_type = args.entryType,
-                    description = binding.etRemark.text.toString(), book_id = args.bookId,
-                    category_id = selectedCategory!!._id, category = selectedCategory!!.name)
-                viewModel.addEntry(entry)
-            } else {
-                val entry = args.entry!!.copy(entry_amount = binding.etAmount.text.toString().toInt(),
-                    description = binding.etRemark.text.toString(),
-                    category_id = selectedCategory!!._id, category = selectedCategory!!.name)
-                viewModel.updateEntry(entry)
-            }
-        }
+            if(binding.etAmount.text.toString().isNotEmpty()) {
+                if(type == 1 || type == -1) {
+                    if(selectedCategory!= null) {
+                        val entry = Entry(
+                            entry_amount = binding.etAmount.text.toString().toInt(), entry_type = args.entryType,
+                            description = binding.etRemark.text.toString(), book_id = args.bookId,
+                            category_id = selectedCategory!!._id, category = selectedCategory!!.name)
+                        viewModel.addEntry(entry)
+                    } else {
+                        val entry = Entry(
+                            entry_amount = binding.etAmount.text.toString().toInt(), entry_type = args.entryType,
+                            description = binding.etRemark.text.toString(), book_id = args.bookId,
+                            category_id = null, category = null)
+                        viewModel.addEntry(entry)
+                    }
 
-        (activity as MainActivity).toolbar.setOnMenuItemClickListener {
-            if (it.itemId == R.id.action_delete) {
-             Toast.makeText(activity, "toolbar menu", Toast.LENGTH_LONG).show()
+                } else {
+                    if(selectedCategory!= null) {
+                        val entry = args.entry!!.copy(entry_amount = binding.etAmount.text.toString().toInt(),
+                            description = binding.etRemark.text.toString(),
+                            category_id = selectedCategory!!._id, category = selectedCategory!!.name)
+                        viewModel.updateEntry(entry)
+                    } else {
+                        val entry = args.entry!!.copy(entry_amount = binding.etAmount.text.toString().toInt(),
+                            description = binding.etRemark.text.toString())
+                        viewModel.updateEntry(entry)
+                    }
+
+                }
+            } else {
+                Toast.makeText(this.activity, "Please enter amount.", Toast.LENGTH_LONG).show()
             }
-            false
         }
 
         viewModel.actionType.observe(viewLifecycleOwner) {
@@ -152,26 +154,6 @@ class EntryDetailFragment:Fragment(R.layout.fragment_entry_detail), MenuProvider
                 selectedBookViewModel.updateBook(book)
                 findNavController().navigateUp()
             }
-        }
-    }
-
-
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.menu_list, menu)
-
-        menuDelete = menu.findItem(R.id.action_delete)
-        if (args.entry!= null) {
-            menuDelete?.isVisible = true
-        }
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        return when (menuItem.itemId) {
-            R.id.action_delete -> {
-                viewModel.deleteEntry(args.entry!!)
-                true
-            }
-            else -> false
         }
     }
 

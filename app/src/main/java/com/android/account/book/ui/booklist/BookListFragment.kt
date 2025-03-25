@@ -12,8 +12,6 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -28,8 +26,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.launch
-import kotlin.math.truncate
-
 
 @AndroidEntryPoint
 class BookListFragment : Fragment(R.layout.fragment_book_list),
@@ -76,15 +72,17 @@ class BookListFragment : Fragment(R.layout.fragment_book_list),
             }
         }
 
-        viewModel.responseMessage.observe(viewLifecycleOwner, Observer {
+        viewModel.responseMessage.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled().let {
                 if (it != null) {
-                    Toast.makeText(this.activity, it.toString(), Toast.LENGTH_LONG).show()
+                    //Toast.makeText(this.activity, it.toString(), Toast.LENGTH_LONG).show()
+                    if (binding.emptyView.isVisible) {
+                        binding.emptyView.isVisible = false
+                    }
                 }
                 bottomSheetDialog.dismiss()
             }
-        })
-
+        }
     }
 
     fun showBottomSheetDialog() {
@@ -119,7 +117,7 @@ class BookListFragment : Fragment(R.layout.fragment_book_list),
     override fun onOptionClick(view: View, book: Book) {
         val popup = PopupMenu(activity, view)
         // Inflating popup menu from popup_menu.xml file
-        popup.inflate(R.menu.menu_list)
+        popup.inflate(R.menu.book_menu_list)
 
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -152,9 +150,11 @@ class BookListFragment : Fragment(R.layout.fragment_book_list),
         var tvLabel = bottomSheetDialog.findViewById<TextView>(R.id.tv_label)!!
         tvLabel.text = "Update Book Title"
         var btAdd = bottomSheetDialog.findViewById<Button>(R.id.bt_add)!!
+        var etTitle = bottomSheetDialog.findViewById<EditText>(R.id.et_title)!!
+        etTitle.setText(book.title)
         btAdd.text = "Update Title"
         btAdd.setOnClickListener {
-            var title = bottomSheetDialog.findViewById<EditText>(R.id.et_title)?.text.toString()
+            var title = etTitle.text.toString()
             if (title.isNotEmpty()) {
                 viewModel.updateBookTitle(book._id, title)
             } else {
@@ -170,11 +170,12 @@ class BookListFragment : Fragment(R.layout.fragment_book_list),
 
     private fun deleteBook(book: Book) {
         val builder = AlertDialog.Builder(activity)
-        builder.setMessage("Do you want to delete this book ?")
+        builder.setMessage("It will delete all entries and categories of this book. Do you still want to delete this book ?")
         builder.setTitle("Delete Book")
 
         builder.setPositiveButton("Yes") { dialog, which ->
             viewModel.deleteBook(book)
+
         }
         builder.setNegativeButton("No") { dialog, which ->
             dialog.cancel()

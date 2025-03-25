@@ -16,7 +16,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
-        android:paddingStart="16dp">
+        android:paddingStart="16dp"
+        android:paddingBottom="8dp">
 
         <TextView
             android:id="@+id/tv_category"
@@ -39,15 +40,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:textAppearance="?textAppearanceBodyMedium"
             android:maxLines="1"
-            android:paddingBottom="8dp"
             android:paddingEnd="16dp"
+            android:paddingBottom="8dp"
+            android:textAppearance="?textAppearanceBodyMedium"
             android:textColor="?android:textColorSecondary"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_category"
-            tools:text="2008"/>
+            app:layout_constraintTop_toTopOf="@+id/tv_category"
+            tools:text="2008" />
 
         <TextView
             android:id="@+id/tv_desc"
@@ -74,11 +75,26 @@
             android:id="@+id/tv_updated_at"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/divider"
-            app:layout_constraintStart_toStartOf="parent"
+            android:paddingBottom="5dp"
             android:text="11 September 2023 at 10:36 pm"
-            android:layout_marginTop="5dp"
-            android:paddingBottom="5dp"/>
+            app:layout_constraintBottom_toBottomOf="@+id/img_options"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/img_options" />
+
+        <ImageView
+            android:id="@+id/img_options"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="2dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="6dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider"
+            app:srcCompat="@drawable/ic_options_24" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

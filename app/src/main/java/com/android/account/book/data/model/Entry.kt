@@ -16,8 +16,8 @@ data class Entry(
     val entry_type: Int,
     val description: String,
     val book_id: Int,
-    val category_id: Int,
-    val category: String,
+    val category_id: Int?,
+    val category: String?,
     val updated_at: Long = System.currentTimeMillis()
 ) : Parcelable {
     val updatedDate: String

@@ -3,6 +3,7 @@ package com.android.account.book.ui.entrylist
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -34,18 +35,26 @@ class EntryListAdapter(
         (binding.root) {
         init {
             binding.apply {
-                root.setOnClickListener {
-                    val position = adapterPosition
-                    if(position!= RecyclerView.NO_POSITION) {
-                        val entry = getItem(position)
-                        listener.onItemClick(entry)
-                    }
+//                root.setOnClickListener {
+//                    val position = adapterPosition
+//                    if(position!= RecyclerView.NO_POSITION) {
+//                        val entry = getItem(position)
+//                        listener.onItemClick(entry)
+//                    }
+//                }
+                binding.imgOptions.setOnClickListener{
+                    val entry = getItem(adapterPosition)
+                    listener.onOptionsClick(imgOptions, entry)
                 }
             }
         }
         fun bind(entry: Entry) {
             binding.apply {
-                tvCategory.text = entry.category
+                if(entry.category!= null) {
+                    tvCategory.text = entry.category
+                } else {
+                    tvCategory.text = "---"
+                }
                 tvAmount.text = entry.entry_amount.toString()
                 tvDesc.text = entry.description
                 tvUpdatedAt.text = entry.updatedDate
@@ -60,6 +69,7 @@ class EntryListAdapter(
 
     interface OnItemClickListener {
         fun onItemClick(entry: Entry)
+        fun onOptionsClick(view: View, entry: Entry)
     }
 
  class DiffCallback : DiffUtil.ItemCallback<Entry>() {

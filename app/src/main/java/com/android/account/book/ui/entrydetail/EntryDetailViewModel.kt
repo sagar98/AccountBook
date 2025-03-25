@@ -40,9 +40,4 @@ class EntryDetailViewModel @Inject constructor(
         }
     }
 
-    fun deleteEntry(entry: Entry) {
-        viewModelScope.launch {
-            repository.deleteEntry(entry)
-        }
-    }
 }

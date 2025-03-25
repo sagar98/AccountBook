@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "8a82c9b9663e33831be6c87ead5d8e3b",
+    "identityHash": "beb3191b4c8153b6c3d2ba2624d5200f",
     "entities": [
       {
         "tableName": "books_table",
@@ -88,7 +88,7 @@
       },
       {
         "tableName": "entry_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `entry_amount` INTEGER NOT NULL, `entry_type` INTEGER NOT NULL, `description` TEXT NOT NULL, `book_id` INTEGER NOT NULL, `category_id` INTEGER NOT NULL, `category` TEXT NOT NULL, `updated_at` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `entry_amount` INTEGER NOT NULL, `entry_type` INTEGER NOT NULL, `description` TEXT NOT NULL, `book_id` INTEGER NOT NULL, `category_id` INTEGER, `category` TEXT, `updated_at` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "_id",
@@ -124,13 +124,13 @@
             "fieldPath": "category_id",
             "columnName": "category_id",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "category",
             "columnName": "category",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "updated_at",
@@ -152,7 +152,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8a82c9b9663e33831be6c87ead5d8e3b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'beb3191b4c8153b6c3d2ba2624d5200f')"
     ]
   }
 }
