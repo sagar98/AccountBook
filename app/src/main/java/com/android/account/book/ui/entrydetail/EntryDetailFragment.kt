@@ -61,12 +61,16 @@ class EntryDetailFragment:Fragment(R.layout.fragment_entry_detail) {
                 binding.etAmount.setText(args.entry!!.entry_amount.toString())
                 binding.etCategory.setText(args.entry!!.category)
                 binding.etRemark.setText(args.entry!!.description)
-                if(args.entry!!.category_id!= null) {
-                    selectedCategory = Category(_id = args.entry!!.category_id!!,
-                        name = args.entry!!.category!!, book_id = args.entry!!.book_id)
+
+                val entry = args.entry
+                if (entry?.category_id != null) {
+                    selectedCategory = Category(
+                        _id = entry.category_id!!,
+                        name = entry.category ?: "",
+                        book_id = entry.book_id
+                    )
                 }
                 binding.btSave.text = "UPDATE"
-
             }
         }
 

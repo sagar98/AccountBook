@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class CategoryListFragment: Fragment(R.layout.fragment_category_list),
     CategoryListAdapter.OnItemClickListener {
-
     private var _binding: FragmentCategoryListBinding? = null
     private val binding get() = _binding!!
     private val viewModel by viewModels<CategoryListViewModel>()
